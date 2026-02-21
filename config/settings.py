@@ -190,3 +190,15 @@ PAYDUNYA_MODE = os.getenv("PAYDUNYA_MODE", "test")
 
 # Commission plateforme (10%)
 PLATFORM_COMMISSION_RATE = 0.10
+
+from apps.accounts.models import User
+
+try:
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="admin@gmail.com",
+            password="admin123"
+        )
+except:
+    pass
