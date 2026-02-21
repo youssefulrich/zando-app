@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 from dotenv import load_dotenv
 import os
-
-
-
 from pathlib import Path
 
 
@@ -30,7 +27,7 @@ SECRET_KEY = 'django-insecure-f0ytwrj75@i6)r3i31s4l9d$h487n=om^8_zzstdjaygwh6)o+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
