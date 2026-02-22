@@ -22,6 +22,14 @@ export interface Residence {
   rating_average: number;
   reviews_count: number;
   images: Array<{ image: string; is_primary: boolean }>;
+  has_wifi: boolean;
+  has_ac: boolean;
+  has_pool: boolean;
+  has_parking: boolean;
+  has_kitchen?: boolean;
+  has_tv?: boolean;
+  has_security?: boolean;
+  has_generator?: boolean;
 }
 
 export interface SearchParams {
