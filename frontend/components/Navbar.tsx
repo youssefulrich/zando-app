@@ -17,7 +17,6 @@ interface User {
 export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
@@ -35,100 +34,105 @@ export default function Navbar() {
   const initials = (f?: string, l?: string) =>
     `${f?.[0] || ""}${l?.[0] || ""}`.toUpperCase();
 
+  // ✅ Vérifier si propriétaire (adapté aux termes français)
   const isOwner = user && [
-    "proprietaire_vehicule",
-    "proprietaire_residence",
-    "proprietaire",
-    "admin"
+    'proprietaire_vehicule',
+    'proprietaire_residence',
+    'proprietaire',  // = both
+    'admin'
   ].includes(user.user_type);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b">
-
+    <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-
         {/* LOGO */}
         <Link
           href="/"
-          className="text-2xl font-bold text-orange-600"
+          className="text-2xl font-extrabold tracking-tight text-orange-600"
         >
           Zando
         </Link>
 
-
-        {/* MENU DESKTOP */}
+        {/* MENU */}
         <div className="hidden md:flex gap-6 font-medium text-gray-700">
-
           <Link href="/residences" className="hover:text-orange-600">
             Résidences
           </Link>
-
           <Link href="/vehicles" className="hover:text-orange-600">
             Véhicules
           </Link>
-
           <Link href="#" className="hover:text-orange-600">
             Restaurant
           </Link>
-
           <Link href="#" className="hover:text-orange-600">
-            Evènements
+            Evenements
           </Link>
-
         </div>
 
-
-
-        {/* DROITE */}
+        {/* USER */}
         <div className="flex items-center gap-3">
-
-          {/* ESPACE PROPRIETAIRE */}
+          {/* ✅ BOUTON ESPACE PROPRIÉTAIRE */}
           {isOwner && (
             <Link
               href="/owner/dashboard"
-              className="hidden md:block bg-orange-100 px-4 py-2 rounded-lg text-orange-700"
+              className="hidden md:flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition font-medium"
             >
-              Mon Espace
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+              <span>Mon Espace</span>
             </Link>
           )}
 
-
-          {/* USER */}
           {user ? (
             <div className="relative">
-
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center"
+                className="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-semibold"
               >
                 {initials(user.first_name, user.last_name)}
               </button>
 
-
               {showDropdown && (
-
-                <div className="absolute right-0 mt-3 w-56 bg-white shadow-xl rounded-xl border">
-
+                <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border">
                   <div className="p-3 border-b text-sm">
                     <p className="font-semibold">
                       {user.first_name} {user.last_name}
                     </p>
-
-                    <p className="text-gray-500 text-xs">
-                      {user.email}
-                    </p>
+                    <p className="text-gray-500 text-xs">{user.email}</p>
                   </div>
 
-
+                  {/* ✅ LIEN ESPACE PROPRIÉTAIRE dans dropdown (mobile) */}
                   {isOwner && (
-
                     <Link
                       href="/owner/dashboard"
-                      className="block px-4 py-2 text-orange-600"
+                      className="md:hidden flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-orange-50 font-medium"
                     >
-                      Espace propriétaire
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                        />
+                      </svg>
+                      Espace Propriétaire
                     </Link>
-
                   )}
 
                   <Link
@@ -145,104 +149,31 @@ export default function Navbar() {
                     Mes réservations
                   </Link>
 
-
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-red-600"
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
                   >
-                    Déconnexion
+                    Se déconnecter
                   </button>
-
                 </div>
-
               )}
-
             </div>
-
           ) : (
-
-            <div className="hidden md:flex gap-3">
-
-              <Link href="/login">
+            <div className="flex gap-3">
+              <Link href="/login" className="px-4 py-2 font-medium">
                 Connexion
               </Link>
 
               <Link
                 href="/register"
-                className="bg-orange-600 text-white px-4 py-2 rounded-lg"
+                className="bg-orange-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-700"
               >
                 S'inscrire
               </Link>
-
             </div>
-
           )}
-
-
-
-          {/* BOUTON MENU MOBILE */}
-          <button
-            className="md:hidden text-2xl"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            ☰
-          </button>
-
-
         </div>
       </div>
-
-
-
-      {/* MENU MOBILE */}
-      {menuOpen && (
-
-        <div className="md:hidden bg-white border-t p-4 space-y-3">
-
-          <Link
-            href="/residences"
-            className="block"
-          >
-            Résidences
-          </Link>
-
-          <Link
-            href="/vehicles"
-            className="block"
-          >
-            Véhicules
-          </Link>
-
-          <Link
-            href="#"
-            className="block"
-          >
-            Restaurant
-          </Link>
-
-          <Link
-            href="#"
-            className="block"
-          >
-            Evènements
-          </Link>
-
-
-          {isOwner && (
-
-            <Link
-              href="/owner/dashboard"
-              className="block text-orange-600 font-semibold"
-            >
-              Mon espace
-            </Link>
-
-          )}
-
-        </div>
-
-      )}
-
     </nav>
   );
 }
