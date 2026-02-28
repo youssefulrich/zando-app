@@ -8,11 +8,14 @@ const api = axios.create({
   },
 });
 
-// Intercepteur REQUEST : Ajouter le token
+// ===============================
+// REQUEST INTERCEPTOR
+// ===============================
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token") || Cookies.get("token");
+      const token =
+        localStorage.getItem("token") || Cookies.get("token");
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -21,57 +24,52 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Intercepteur RESPONSE : Gérer les erreurs 401 (token expiré)
+// ===============================
+// RESPONSE INTERCEPTOR
+// ===============================
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Si erreur 401 et pas déjà tenté de refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // ⚠️ Si 401 et refresh possible
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      // 🔥 S'il n'y a pas de refresh token
+      if (!refreshToken) {
+        // 👉 ON NE REDIRIGE PLUS AUTOMATIQUEMENT
+        return Promise.reject(error);
+      }
+
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const res = await axios.post(
+          "https://zando-backend.onrender.com/api/token/refresh/",
+          { refresh: refreshToken }
+        );
 
-        if (refreshToken) {
-          // Tenter de rafraîchir le token
-          const res = await axios.post("http://127.0.0.1:8000/api/token/refresh/", {
-            refresh: refreshToken,
-          });
+        const newToken = res.data.access;
 
-          const newToken = res.data.access;
+        localStorage.setItem("token", newToken);
+        Cookies.set("token", newToken, { expires: 7 });
 
-          // Sauvegarder le nouveau token
-          localStorage.setItem("token", newToken);
-          Cookies.set("token", newToken, { expires: 7 });
-
-          // Réessayer la requête originale avec le nouveau token
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return api(originalRequest);
-        } else {
-          // Pas de refresh token -> rediriger vers login
-          throw new Error("No refresh token");
-        }
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
       } catch (refreshError) {
-        // Échec du refresh -> déconnecter l'utilisateur
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("token");
-          localStorage.removeItem("refreshToken");
-          localStorage.removeItem("user");
-          Cookies.remove("token");
-          
-          // Ne rediriger que si on n'est pas déjà sur login/register
-          if (!window.location.pathname.includes("/login") && 
-              !window.location.pathname.includes("/register")) {
-            window.location.href = "/login";
-          }
-        }
+        // Nettoyage sans redirection forcée
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        Cookies.remove("token");
+
         return Promise.reject(refreshError);
       }
     }
