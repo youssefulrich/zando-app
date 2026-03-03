@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { Menu, X, Search } from "lucide-react";
 
 interface User {
   id: number;
@@ -17,8 +18,8 @@ interface User {
 export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -42,17 +43,17 @@ export default function Navbar() {
     );
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 bg-white shadow-md">
+
+      {/* ===== MAIN BAR ===== */}
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+
         {/* LOGO */}
-        <Link
-          href="/"
-          className="text-2xl font-extrabold tracking-tight text-orange-600"
-        >
+        <Link href="/" className="text-2xl font-extrabold text-orange-600">
           Zando
         </Link>
 
-        {/* MENU DESKTOP */}
+        {/* DESKTOP MENU */}
         <div className="hidden md:flex gap-6 font-medium text-gray-700">
           <Link href="/residences" className="hover:text-orange-600">
             Résidences
@@ -61,20 +62,23 @@ export default function Navbar() {
             Véhicules
           </Link>
           <Link href="#">Restaurant</Link>
-          <Link href="#">Evenements</Link>
+          <Link href="/events">Evenements</Link>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex items-center gap-3">
-          {/* Hamburger Mobile */}
-          <button
-            className="md:hidden text-2xl"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? "✕" : "☰"}
-          </button>
+        <div className="flex items-center gap-4">
 
-          {/* Desktop user */}
+          {/* SEARCH (Desktop) */}
+          <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2">
+            <Search size={18} className="text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              className="bg-transparent outline-none text-sm w-40"
+            />
+          </div>
+
+          {/* USER DESKTOP */}
           <div className="hidden md:block">
             {user ? (
               <div className="relative">
@@ -86,7 +90,7 @@ export default function Navbar() {
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border z-50">
+                  <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-lg border">
                     <div className="p-3 border-b text-sm">
                       <p className="font-semibold">
                         {user.first_name} {user.last_name}
@@ -121,7 +125,7 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex gap-3">
+              <div className="hidden md:flex gap-3">
                 <Link href="/login">Connexion</Link>
                 <Link
                   href="/register"
@@ -132,12 +136,39 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
+          {/* HAMBURGER MOBILE */}
+          <button
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
-      {/* MENU MOBILE */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed top-16 left-0 w-full h-screen bg-white z-[9999] p-6 space-y-6 text-lg">
+      {/* ===== MOBILE SEARCH ===== */}
+      <div className="md:hidden px-4 pb-4">
+        <div className="flex items-center bg-gray-100 rounded-full px-4 py-3 shadow-inner">
+          <Search size={18} className="text-gray-400 mr-2" />
+          <input
+            type="text"
+            placeholder="Rechercher..."
+            className="flex-1 bg-transparent outline-none text-sm"
+          />
+          <button className="bg-black text-white rounded-full p-2 ml-2">
+            →
+          </button>
+        </div>
+      </div>
+
+      {/* ===== MOBILE DROPDOWN ===== */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="bg-white px-6 py-6 space-y-5 border-t shadow-lg">
           <Link href="/residences" onClick={() => setMobileMenuOpen(false)}>
             Résidences
           </Link>
@@ -147,7 +178,7 @@ export default function Navbar() {
           </Link>
 
           <Link href="#">Restaurant</Link>
-          <Link href="#">Evenements</Link>
+          <Link href="/events">Evenements</Link>
 
           <hr />
 
@@ -156,7 +187,6 @@ export default function Navbar() {
               {isOwner && (
                 <Link
                   href="/owner/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
                   className="text-orange-600 font-medium"
                 >
                   Espace Propriétaire
@@ -166,10 +196,7 @@ export default function Navbar() {
               <Link href="/profile">Mon profil</Link>
               <Link href="/bookings">Mes réservations</Link>
 
-              <button
-                onClick={handleLogout}
-                className="text-red-600 text-left"
-              >
+              <button onClick={handleLogout} className="text-red-600">
                 Se déconnecter
               </button>
             </>
@@ -185,7 +212,7 @@ export default function Navbar() {
             </>
           )}
         </div>
-      )}
+      </div>
     </nav>
   );
 }
