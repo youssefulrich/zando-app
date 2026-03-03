@@ -159,9 +159,10 @@ class ResidenceImage(models.Model):
         # Si c'est marqué comme image principale, retirer le flag des autres
         if self.is_primary:
             ResidenceImage.objects.filter(
-                vehicle=self.residence,
+                residence=self.residence,
                 is_primary=True
             ).exclude(id=self.id).update(is_primary=False)
+        super().save(*args, **kwargs)
 
 
 
