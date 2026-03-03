@@ -17,7 +17,8 @@ urlpatterns = [
     path("api/", include("apps.payments.urls")),
     path("api/token/", TokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
-    path('api/auth/', include('apps.accounts.urls')),  # ✅ Doit être là
+    path('api/auth/', include('apps.accounts.urls')), 
+    path("api/events/", include("apps.events.urls")),
 
 
 ]
