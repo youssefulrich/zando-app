@@ -57,11 +57,25 @@ export default function ResidencesPage() {
 
   const fetchResidences = async () => {
     try {
-      const res = await api.get("residences/");
-      setResidences(res.data);
-      setFilteredResidences(res.data);
+      setLoading(true);
+      
+      // ✅ FETCH PUBLIC (sans token)
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://zando-backend.onrender.com';
+      const res = await fetch(`${API_URL}/api/residences/`);
+      
+      if (!res.ok) {
+        throw new Error(`Erreur ${res.status}: ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      console.log('Résidences chargées:', data.length); // Debug
+      
+      setResidences(data);
+      setFilteredResidences(data);
     } catch (err) {
-      console.error("Erreur fetch:", err);
+      console.error("Erreur fetch résidences:", err);
+      // Afficher l'erreur à l'utilisateur
+      alert("Impossible de charger les résidences. Vérifiez votre connexion.");
     } finally {
       setLoading(false);
     }
