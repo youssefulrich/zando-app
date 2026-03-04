@@ -16,7 +16,8 @@ import {
   Award,
   CheckCircle2,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Search
 } from "lucide-react";
 
 /* ================================================= */
