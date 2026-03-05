@@ -59,6 +59,7 @@ export default function OwnerLayout({
         ![
           "proprietaire_vehicule",
           "proprietaire_residence",
+          "proprietaire_event",
           "proprietaire",
           "admin",
         ].includes(userData.user_type)
@@ -93,6 +94,13 @@ export default function OwnerLayout({
       user.user_type
     );
 
+  const canManageEvents =
+    user &&
+    ["proprietaire_event", "proprietaire", "admin"].includes(
+      user.user_type
+    );
+
+
   const navigation = [
     {
       name: "Dashboard",
@@ -117,6 +125,15 @@ export default function OwnerLayout({
       visible: canManageResidences,
       color: "text-orange-500",
       bgColor: "bg-orange-50"
+    },
+
+    {
+      name: "Mes Evenements",
+      href: "/owner/events",
+      icon: Calendar,
+      visible: canManageEvents,
+      color: "text-pink-500",
+      bgColor: "bg-pink-50"
     },
     {
       name: "Réservations",
@@ -146,6 +163,12 @@ export default function OwnerLayout({
       label: "Résidences",
       icon: HomeIcon,
       color: "from-orange-500 to-red-500"
+    },
+
+    proprietaire_event: {
+      label: "Evenements",
+      icon: Calendar,
+      color: "from-pink-500 to-purple-500"
     },
     proprietaire: {
       label: "Complet",

@@ -18,7 +18,7 @@ export default function RegisterPage() {
     phone: "",
     user_type: "client",
 
-    // 🔥 Paiements
+    // Paiements
     wave_number: "",
     orange_money_number: "",
     mtn_money_number: "",
@@ -26,8 +26,12 @@ export default function RegisterPage() {
   });
 
   const [accountType, setAccountType] = useState<"client" | "owner">("client");
+
   const [ownerType, setOwnerType] = useState<
-    "proprietaire_vehicule" | "proprietaire_residence" | "proprietaire"
+    | "proprietaire_vehicule"
+    | "proprietaire_residence"
+    | "proprietaire_event"
+    | "proprietaire"
   >("proprietaire");
 
   const [error, setError] = useState("");
@@ -38,11 +42,10 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
 
-    // ✅ Déterminer user_type final
     const finalUserType =
       accountType === "client" ? "client" : ownerType;
 
-    // 🔥 Validation frontend paiement
+    // Validation paiement propriétaire
     if (
       accountType === "owner" &&
       !formData.wave_number &&
@@ -69,7 +72,7 @@ export default function RegisterPage() {
         err.response?.data?.email?.[0] ||
         err.response?.data?.username?.[0] ||
         err.response?.data?.password?.[0] ||
-        err.response?.data?.payment ||
+        err.response?.data?.detail ||
         "Erreur lors de l'inscription";
 
       setError(errorMsg);
@@ -138,11 +141,17 @@ export default function RegisterPage() {
               <option value="proprietaire_vehicule">
                 Véhicules uniquement
               </option>
+
               <option value="proprietaire_residence">
                 Résidences uniquement
               </option>
+
+              <option value="proprietaire_event">
+                Événements uniquement
+              </option>
+
               <option value="proprietaire">
-                Les deux
+                Tout (véhicules + résidences + événements)
               </option>
             </select>
           )}
@@ -224,7 +233,7 @@ export default function RegisterPage() {
             className="w-full border p-3 rounded-lg"
           />
 
-          {/* 🔥 PAIEMENTS */}
+          {/* PAIEMENTS */}
           {accountType === "owner" && (
             <div className="border-t pt-6 space-y-3">
               <h3 className="font-semibold">
